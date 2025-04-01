@@ -1,6 +1,7 @@
 import NavBar from "../components/Navigationbar";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { forumService } from "../services/api";
 
 const HomePage = () => {
     const [activeTab, setActiveTab] = useState('Featured');
@@ -17,11 +18,7 @@ const HomePage = () => {
     useEffect(() => {
         const fetchForumPosts = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/forum');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch forum posts');
-                }
-                const data = await response.json();
+                const data = await forumService.getPosts();
                 setForumPosts(data);
             } catch (error) {
                 console.error('Error fetching forum posts:', error);
@@ -98,8 +95,7 @@ const HomePage = () => {
 
     const handleLike = async (postId) => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("Please login to like posts");
                 return;
             }
@@ -111,18 +107,8 @@ const HomePage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/forum/${postId}/like`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to like post");
-            }
-
-            const updatedPost = await response.json();
+            const updatedPost = await forumService.likePost(postId);
+            
             setForumPosts(prevPosts => 
                 prevPosts.map(post => 
                     post._id === postId ? updatedPost : post
@@ -136,8 +122,7 @@ const HomePage = () => {
 
     const handleComment = async (postId) => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("Please login to comment");
                 return;
             }
@@ -148,18 +133,22 @@ const HomePage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/forum/${postId}/comments`, {
+            const commentData = {
+                content: content.trim(),
+                userId: user._id,
+                userName: user.userName,
+                userProfilePic: user.profilePic || ""
+            };
+
+            // We need to add the comment endpoint to our API service
+            // For now, we'll still use fetch directly
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://likhub-backend.onrender.com'}/api/forum/${postId}/comments`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
-                body: JSON.stringify({
-                    content: content.trim(),
-                    userId: user._id,
-                    userName: user.userName,
-                    userProfilePic: user.profilePic || ""
-                })
+                body: JSON.stringify(commentData)
             });
 
             if (!response.ok) {

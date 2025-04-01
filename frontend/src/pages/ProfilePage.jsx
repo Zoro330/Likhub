@@ -1,21 +1,20 @@
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navigationbar";
+import { authService } from "../services/api";
 
 const ProfilePage = () => {
-    const { user, setUser } = useContext(AuthContext);
+    const { user, updateUser } = useContext(AuthContext);
     const [name, setName] = useState("");
     const [profilePic, setProfilePic] = useState("");
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-            setName(storedUser.userName);
-            setProfilePic(storedUser.profilePic || "");
+        if (user) {
+            setName(user.userName || "");
+            setProfilePic(user.profilePic || "");
         }
-    }, [setUser]);
+    }, [user]);
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -53,26 +52,14 @@ const ProfilePage = () => {
         }
     
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/auth/update", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ userName: name, profilePic }),
-            });
-    
-            const data = await response.json();
-    
-            if (response.ok) {
-                const updatedUser = { ...user, userName: name, profilePic };
-                setUser(updatedUser);
-                localStorage.setItem("user", JSON.stringify(updatedUser));
+            const data = await authService.updateProfile({ userName: name, profilePic });
+            
+            if (data.user) {
+                updateUser(data.user);
                 alert("Profile updated successfully!");
                 window.location.reload();
             } else {
-                throw new Error(data.message || "Failed to update profile");
+                throw new Error("Failed to update profile");
             }
         } catch (error) {
             console.error("Error updating profile:", error);

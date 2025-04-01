@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { inventionsService, forumService } from "../services/api";
 
 const CreatePost = ({ onPostCreated, onClose }) => {
   const { user } = useContext(AuthContext);
@@ -89,15 +90,10 @@ const CreatePost = ({ onPostCreated, onClose }) => {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
+      if (!user) {
         setErrors(prev => ({ ...prev, submit: "Please log in to create a post" }));
         return;
       }
-
-      const endpoint = formData.destination === "inventions" 
-        ? "http://localhost:5000/api/inventions/create"
-        : "http://localhost:5000/api/forum";
 
       const postData = {
         title: formData.title,
@@ -112,21 +108,13 @@ const CreatePost = ({ onPostCreated, onClose }) => {
         postData.image = formData.image;
       }
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(postData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create post");
+      let data;
+      if (formData.destination === "inventions") {
+        data = await inventionsService.createInvention(postData);
+      } else {
+        data = await forumService.createPost(postData);
       }
 
-      const data = await response.json();
       console.log("Post created successfully:", data);
       onPostCreated();
       

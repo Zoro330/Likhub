@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import NavBar from "../components/Navigationbar";
 import CreatePost from "../components/CreatePost";
 import { AuthContext } from "../context/AuthContext";
+import { inventionsService, authService } from "../services/api";
 
 const InventionPage = () => {
     const { user } = useContext(AuthContext);
@@ -13,8 +14,7 @@ const InventionPage = () => {
 
     const fetchInventions = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/inventions");
-            const data = await res.json();
+            const data = await inventionsService.getInventions();
 
             if (!Array.isArray(data)) {
                 console.error("❌ Invalid data format received:", data);
@@ -30,12 +30,7 @@ const InventionPage = () => {
             await Promise.all(uniqueUserIds.map(async (userId) => {
                 try {
                     if (!userId) return; // Skip if userId is null/undefined
-                    const userRes = await fetch(`http://localhost:5000/api/auth/user/${userId}`);
-                    if (!userRes.ok) {
-                        console.error(`Failed to fetch user data for ${userId}`);
-                        return;
-                    }
-                    const userData = await userRes.json();
+                    const userData = await authService.getUser(userId);
                     if (userData.user) {
                         userDataMap.set(userId, userData.user);
                     }
@@ -71,8 +66,7 @@ const InventionPage = () => {
 
     const handleLike = async (postId) => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("Please login to like posts");
                 return;
             }
@@ -84,20 +78,9 @@ const InventionPage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/inventions/${postId}/like`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            const updatedPost = await inventionsService.likeInvention(postId);
+            
             // Update the posts state to reflect the new like
-            const updatedPost = await response.json();
             setPosts(posts.map(post => 
                 post._id === postId ? updatedPost : post
             ));
@@ -122,25 +105,12 @@ const InventionPage = () => {
         }
 
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("You must be logged in to delete posts");
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/inventions/${postId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Failed to delete post");
-            }
+            await inventionsService.deleteInvention(postId);
 
             // Remove the deleted post from the state
             setPosts(posts.filter(post => post._id !== postId));
