@@ -14,8 +14,8 @@ const CreatePost = ({ onPostCreated, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const CLOUD_NAME = "dwhrwkgyp"; 
-  const UPLOAD_PRESET = "Likhub123";
+  const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "dwhrwkgyp"; 
+  const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub123";
 
   const validateForm = () => {
     const newErrors = {};

@@ -140,23 +140,8 @@ const HomePage = () => {
                 userProfilePic: user.profilePic || ""
             };
 
-            // We need to add the comment endpoint to our API service
-            // For now, we'll still use fetch directly
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://likhub-backend.onrender.com'}/api/forum/${postId}/comments`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                },
-                body: JSON.stringify(commentData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to add comment");
-            }
-
-            const updatedPost = await response.json();
+            const updatedPost = await forumService.addComment(postId, commentData);
+            
             setForumPosts(prevPosts => 
                 prevPosts.map(post => 
                     post._id === postId ? updatedPost : post

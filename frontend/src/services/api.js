@@ -60,7 +60,7 @@ export const forumService = {
   getPosts: () => apiRequest('/api/forum'),
   
   likePost: (postId) => apiRequest(`/api/forum/${postId}/like`, {
-    method: 'POST'
+    method: 'PATCH'
   }),
   
   getComments: (postId) => apiRequest(`/api/forum/${postId}/comments`),
@@ -76,6 +76,11 @@ export const forumService = {
   createPost: (postData) => apiRequest('/api/forum', {
     method: 'POST',
     body: JSON.stringify(postData)
+  }),
+  
+  addComment: (postId, commentData) => apiRequest(`/api/forum/${postId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify(commentData)
   })
 };
 
@@ -84,7 +89,7 @@ export const inventionsService = {
   getInventions: () => apiRequest('/api/inventions'),
   
   likeInvention: (postId) => apiRequest(`/api/inventions/${postId}/like`, {
-    method: 'POST'
+    method: 'PATCH'
   }),
   
   deleteInvention: (postId) => apiRequest(`/api/inventions/${postId}`, {

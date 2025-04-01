@@ -9,6 +9,9 @@ const ProfilePage = () => {
     const [profilePic, setProfilePic] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "dwhrwkgyp";
+    const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub123";
+
     useEffect(() => {
         if (user) {
             setName(user.userName || "");
@@ -23,10 +26,10 @@ const ProfilePage = () => {
         setLoading(true);
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("upload_preset", "Likhub123");
+        formData.append("upload_preset", UPLOAD_PRESET);
 
         try {
-            const response = await fetch("https://api.cloudinary.com/v1_1/dwhrwkgyp/image/upload", {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
                 method: "POST",
                 body: formData,
             });
