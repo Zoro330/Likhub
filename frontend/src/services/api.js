@@ -91,7 +91,7 @@ export const authService = {
   }),
   
   updateProfile: (userData) => apiRequest('/api/auth/update', {
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(userData)
   }),
   
