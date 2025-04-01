@@ -21,7 +21,9 @@
     "build": "react-scripts build && node postbuild.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "node simple-server.js"
+    "serve": "node simple-server.js",
+    "serve-minimal": "node minimal-server.js",
+    "deploy-start": "node direct-server.js"
   },
   "eslintConfig": {
     "extends": [
