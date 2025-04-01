@@ -1,16 +1,13 @@
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navigationbar";
-import { authService } from "../services/api";
+import { authService, cloudinaryService } from "../services/api";
 
 const ProfilePage = () => {
     const { user, updateUser } = useContext(AuthContext);
     const [name, setName] = useState("");
     const [profilePic, setProfilePic] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "dwhrwkgyp";
-    const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub123";
 
     useEffect(() => {
         if (user) {
@@ -24,25 +21,12 @@ const ProfilePage = () => {
         if (!file) return;
 
         setLoading(true);
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", UPLOAD_PRESET);
-
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await response.json();
-            if (data.secure_url) {
-                setProfilePic(data.secure_url);
-            } else {
-                throw new Error("Upload failed");
-            }
+            const imageUrl = await cloudinaryService.uploadImage(file);
+            setProfilePic(imageUrl);
         } catch (error) {
             console.error("Error uploading image:", error);
-            alert("Failed to upload image. Try again.");
+            alert(error.message || "Failed to upload image. Try again.");
         } finally {
             setLoading(false);
         }
