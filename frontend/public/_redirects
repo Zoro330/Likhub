@@ -1,1 +1,8 @@
-/* /index.html 200 
+/* /index.html 200
+/static/* /static/:splat 200
+/assets/* /assets/:splat 200
+/manifest.json /manifest.json 200
+/favicon.ico /favicon.ico 200
+/logo192.png /logo192.png 200
+/logo512.png /logo512.png 200
+/test.html /test.html 200 
