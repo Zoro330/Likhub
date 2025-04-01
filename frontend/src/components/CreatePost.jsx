@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { inventionsService, forumService } from "../services/api";
+import { inventionsService, forumService, cloudinaryService } from "../services/api";
 
 const CreatePost = ({ onPostCreated, onClose }) => {
   const { user } = useContext(AuthContext);
@@ -13,9 +13,6 @@ const CreatePost = ({ onPostCreated, onClose }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "dwhrwkgyp"; 
-  const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub123";
 
   const validateForm = () => {
     const newErrors = {};
@@ -45,37 +42,15 @@ const CreatePost = ({ onPostCreated, onClose }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setErrors(prev => ({ ...prev, image: "Please upload an image file" }));
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, image: "Image size should be less than 5MB" }));
-      return;
-    }
-
     setIsUploading(true);
     setErrors(prev => ({ ...prev, image: null }));
-    const formDataObj = new FormData();
-    formDataObj.append("file", file);
-    formDataObj.append("upload_preset", UPLOAD_PRESET);
-
+    
     try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-        { method: "POST", body: formDataObj }
-      );
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "Failed to upload image");
-
-      setFormData(prev => ({ ...prev, image: data.secure_url }));
+      const imageUrl = await cloudinaryService.uploadImage(file);
+      setFormData(prev => ({ ...prev, image: imageUrl }));
     } catch (error) {
       console.error("❌ Error uploading image:", error.message);
-      setErrors(prev => ({ ...prev, image: "Failed to upload image. Please try again." }));
+      setErrors(prev => ({ ...prev, image: error.message || "Failed to upload image. Please try again." }));
     } finally {
       setIsUploading(false);
     }

@@ -203,24 +203,13 @@ const HomePage = () => {
         }
 
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("You must be logged in to delete posts");
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/forum/${postId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete post");
-            }
-
+            await forumService.deletePost(postId);
+            
             setForumPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
             alert("Post deleted successfully!");
         } catch (error) {
@@ -235,25 +224,13 @@ const HomePage = () => {
         }
 
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
+            if (!user) {
                 alert("You must be logged in to delete comments");
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/forum/${postId}/comments/${commentId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete comment");
-            }
-
-            const updatedPost = await response.json();
+            const updatedPost = await forumService.deleteComment(postId, commentId);
+            
             setForumPosts(prevPosts => 
                 prevPosts.map(post => 
                     post._id === postId ? updatedPost : post

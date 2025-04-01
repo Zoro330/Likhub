@@ -1,5 +1,7 @@
 // API base URL configuration
 const API_URL = process.env.REACT_APP_API_URL || 'https://likhub-backend.onrender.com';
+const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "dwhrwkgyp";
+const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub123";
 
 // Helper function for API requests
 const apiRequest = async (endpoint, options = {}) => {
@@ -32,6 +34,44 @@ const apiRequest = async (endpoint, options = {}) => {
   } catch (error) {
     console.error(`❌ API Error: ${error.message}`);
     throw error;
+  }
+};
+
+// Cloudinary service
+export const cloudinaryService = {
+  uploadImage: async (file) => {
+    if (!file) throw new Error("No file provided");
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      throw new Error("Please upload an image file");
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("Image size should be less than 5MB");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        { method: "POST", body: formData }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || "Failed to upload image");
+      }
+
+      return data.secure_url;
+    } catch (error) {
+      console.error("❌ Error uploading image:", error.message);
+      throw error;
+    }
   }
 };
 
@@ -106,7 +146,8 @@ export const inventionsService = {
 const apiServices = {
   authService,
   forumService,
-  inventionsService
+  inventionsService,
+  cloudinaryService
 };
 
 // Export the named object as default
