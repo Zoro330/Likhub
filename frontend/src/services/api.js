@@ -158,7 +158,7 @@ export const inventionsService = {
   
   createInvention: (inventionData) => {
     console.log('📝 Creating invention post with data:', inventionData);
-    return apiRequest('/api/inventions', {
+    return apiRequest('/api/inventions/create', {
       method: 'POST',
       body: JSON.stringify(inventionData)
     });
