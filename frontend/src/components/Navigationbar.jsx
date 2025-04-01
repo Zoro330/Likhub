@@ -212,7 +212,7 @@ const styles = {
     logoLink: {
         textDecoration: 'none',
         marginRight: '48px',
-        marginLeft: '-120px',
+        marginLeft: '-60px',
     },
     logoContainer: {
         display: 'flex',
@@ -240,7 +240,7 @@ const styles = {
         alignItems: 'center',
         gap: '16px',
         marginLeft: '48px',
-        marginRight: '-120px',
+        marginRight: '-60px',
     },
     iconButton: {
         background: 'none',
