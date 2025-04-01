@@ -55,6 +55,8 @@ export const cloudinaryService = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
+    
+    console.log("Using Cloudinary preset:", UPLOAD_PRESET);
 
     try {
       const response = await fetch(
@@ -64,6 +66,7 @@ export const cloudinaryService = {
 
       const data = await response.json();
       if (!response.ok) {
+        console.error("Cloudinary error:", data);
         throw new Error(data.error?.message || "Failed to upload image");
       }
 
