@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: likhub-frontend
+    name: likhub2
     env: node
     buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && node simple-server.js
+    startCommand: cd frontend && npm run serve
     envVars:
       - key: NODE_ENV
         value: production
