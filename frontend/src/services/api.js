@@ -130,10 +130,13 @@ export const forumService = {
     method: 'DELETE'
   }),
   
-  createPost: (postData) => apiRequest('/api/forum', {
-    method: 'POST',
-    body: JSON.stringify(postData)
-  }),
+  createPost: (postData) => {
+    console.log('📝 Creating forum post with data:', postData);
+    return apiRequest('/api/forum', {
+      method: 'POST',
+      body: JSON.stringify(postData)
+    });
+  },
   
   addComment: (postId, commentData) => apiRequest(`/api/forum/${postId}/comments`, {
     method: 'POST',
@@ -153,10 +156,13 @@ export const inventionsService = {
     method: 'DELETE'
   }),
   
-  createInvention: (inventionData) => apiRequest('/api/inventions', {
-    method: 'POST',
-    body: JSON.stringify(inventionData)
-  })
+  createInvention: (inventionData) => {
+    console.log('📝 Creating invention post with data:', inventionData);
+    return apiRequest('/api/inventions', {
+      method: 'POST',
+      body: JSON.stringify(inventionData)
+    });
+  }
 };
 
 // Create a named export for the API services

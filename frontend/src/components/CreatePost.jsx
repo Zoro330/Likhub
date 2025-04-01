@@ -83,11 +83,18 @@ const CreatePost = ({ onPostCreated, onClose }) => {
         postData.image = formData.image;
       }
 
+      console.log(`Attempting to create ${formData.destination} post with data:`, postData);
+
       let data;
-      if (formData.destination === "inventions") {
-        data = await inventionsService.createInvention(postData);
-      } else {
-        data = await forumService.createPost(postData);
+      try {
+        if (formData.destination === "inventions") {
+          data = await inventionsService.createInvention(postData);
+        } else {
+          data = await forumService.createPost(postData);
+        }
+      } catch (apiError) {
+        console.error(`API error creating ${formData.destination}:`, apiError);
+        throw new Error(`Failed to create ${formData.destination} post: ${apiError.message}`);
       }
 
       console.log("Post created successfully:", data);
