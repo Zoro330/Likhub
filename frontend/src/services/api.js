@@ -7,6 +7,8 @@ const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "Likhub1
 const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_URL}${endpoint}`;
   
+  console.log(`🔍 API Request: ${options.method || 'GET'} ${url}`);
+  
   // Set default headers
   if (!options.headers) {
     options.headers = {};
@@ -22,9 +24,18 @@ const apiRequest = async (endpoint, options = {}) => {
     options.headers['Authorization'] = `Bearer ${token}`;
   }
   
+  console.log('📤 Request options:', {
+    method: options.method,
+    headers: options.headers,
+    body: options.body ? 'Present' : 'None'
+  });
+  
   try {
     const response = await fetch(url, options);
+    console.log(`📥 Response status: ${response.status}`);
+    
     const data = await response.json();
+    console.log('📥 Response data:', data);
     
     if (!response.ok) {
       throw new Error(data.message || 'Something went wrong');
@@ -90,10 +101,13 @@ export const authService = {
     body: JSON.stringify(userData)
   }),
   
-  updateProfile: (userData) => apiRequest('/api/auth/update', {
-    method: 'PUT',
-    body: JSON.stringify(userData)
-  }),
+  updateProfile: (userData) => {
+    console.log('🔄 Updating profile with data:', userData);
+    return apiRequest('/api/auth/update', {
+      method: 'PUT',
+      body: JSON.stringify(userData)
+    });
+  },
   
   getUser: (userId) => apiRequest(`/api/auth/user/${userId}`)
 };

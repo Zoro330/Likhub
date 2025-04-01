@@ -39,18 +39,23 @@ const ProfilePage = () => {
         }
     
         try {
+            console.log("🔄 Starting profile update...");
+            console.log("User data:", { userName: name, profilePic });
+            
             const data = await authService.updateProfile({ userName: name, profilePic });
+            console.log("✅ Profile update response:", data);
             
             if (data.user) {
                 updateUser(data.user);
                 alert("Profile updated successfully!");
                 window.location.reload();
             } else {
-                throw new Error("Failed to update profile");
+                console.error("❌ Profile update failed - no user data returned:", data);
+                throw new Error("Failed to update profile - no user data returned");
             }
         } catch (error) {
-            console.error("Error updating profile:", error);
-            alert("Error updating profile. Please try again.");
+            console.error("❌ Error updating profile:", error);
+            alert(`Error updating profile: ${error.message}. Please try again.`);
         }
     };
 
