@@ -12,9 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://likhub2.onrender.com'],
+  origin: ['http://localhost:3000', 'https://likhub2.onrender.com', 'https://likhub-frontend.onrender.com'],
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -22,10 +22,13 @@ app.use(cors({
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;"
+    "default-src 'self'; connect-src 'self'; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
   );
   next();
 });
+
+// Handle OPTIONS requests for CORS preflight
+app.options('*', cors());
 
 // ✅ Correct Route Usage
 app.use("/api/inventions", inventionsRoutes);

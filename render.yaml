@@ -9,6 +9,10 @@ services:
         value: production
       - key: PORT
         value: 10000
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; connect-src 'self' https://likhub-backend.onrender.com; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
 
   - type: web
     name: likhub-backend
@@ -18,7 +22,15 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
       - key: MONGO_URI
         sync: false
       - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
         sync: false 
