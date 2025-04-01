@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navigationbar";
 import { authService, cloudinaryService } from "../services/api";
 
@@ -8,6 +9,7 @@ const ProfilePage = () => {
     const [name, setName] = useState("");
     const [profilePic, setProfilePic] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
@@ -48,7 +50,7 @@ const ProfilePage = () => {
             if (data.user) {
                 updateUser(data.user);
                 alert("Profile updated successfully!");
-                window.location.reload();
+                navigate('/home');
             } else {
                 console.error("❌ Profile update failed - no user data returned:", data);
                 throw new Error("Failed to update profile - no user data returned");
