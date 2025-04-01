@@ -97,8 +97,12 @@ export const inventionsService = {
   })
 };
 
-export default {
+// Create a named export for the API services
+const apiServices = {
   authService,
   forumService,
   inventionsService
-}; 
+};
+
+// Export the named object as default
+export default apiServices; 
